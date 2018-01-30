@@ -5,14 +5,16 @@ import (
 	"fmt"
 )
 
-var ecAddr = "play.easecation.net:19132"
-
 func TestPull(t *testing.T) {
-	conn, err := Dial(McBedrock, ecAddr)
-	if err != nil {
-		t.Error(err)
+	a := func(addr string) {
+		conn, err := Dial(McBedrock, addr)
+		if err != nil {
+			t.Error(err)
+		}
+		res, err := conn.Pull()
+		fmt.Println(res)
 	}
-	res, err := conn.Pull()
-	fmt.Println(err)
-	fmt.Println(res)
+	a( "play.ease"+"cation.net:19132")
+	a("play.lb"+"sg.net:19132")
+	a("bw.fe"+"craft.cc:19132")
 }
