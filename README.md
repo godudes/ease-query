@@ -1,2 +1,2 @@
 # EaseQuery
-Query server and client util for both Minecraft Java and bedrock editions
+Query server and client util for both MineCraft Java and bedrock editions

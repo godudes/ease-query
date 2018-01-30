@@ -11,8 +11,8 @@ import (
 	"math"
 )
 
-var magic = []byte("\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78")
-var validDataFormat = "MCPE"
+var magic = []byte{0x00, 0xff, 0xff, 0x00, 0xfe, 0xfe, 0xfe, 0xfe, 0xfd, 0xfd, 0xfd, 0xfd, 0x12, 0x34, 0x56, 0x78}
+var validDataFormat = "MC"+"PE" // I hate typo checks
 
 type bedrockResult struct {
 	serverId uint64
