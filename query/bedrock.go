@@ -37,42 +37,55 @@ func bedrockPull(addr string) (Result, error) {
 
 	reqPacket := new(bytes.Buffer)
 	reqPacket.WriteByte(0x01)
-	pingId :=  rand.Uint32()
+	pingId :=  rand.Uint64()
 	binary.Write(reqPacket, binary.BigEndian, pingId)
 	reqPacket.Write(magic)
-	reqPacket.WriteByte(0)
 	binary.Write(reqPacket, binary.BigEndian, reqPacket.Len())
 	conn.Write(reqPacket.Bytes())
 
-	respBytes := make([]byte, 4096)
-	n, err := conn.Read(respBytes)
+	resBytes := make([]byte, 4096)
+	n, err := conn.Read(resBytes)
 	if err != nil {
 		return nilResult, err
 	}
 	defer func() {conn.Close()} ()
-	respPacket := bytes.NewBuffer(respBytes[35:n]) // jump header
-	res := respPacket.String()
+
+	if n < 33 {
+		return nil, errBedrockWrongLen
+	}
+	if resBytes[0] != 0x1c {
+		return nil, errBedrockWrongMsgId
+	}
+	if !bytes.Equal(resBytes[1:9], reqPacket.Bytes()[1:9]) {
+		return nil, errBedrockWrongPongId
+	}
+	sid := binary.BigEndian.Uint64(resBytes[9:17])
+	if !bytes.Equal(resBytes[17:33], magic) {
+		return nil, errBedrockWrongMagic
+	}
+	resLen := binary.BigEndian.Uint16(resBytes[33:35])
+	if 35 + int(resLen) > n {
+		return nil, errBedrockWrongLen
+	}
+	res := bytes.NewBuffer(resBytes[35:35+resLen]).String() // jump header
 	arr := strings.Split(res, ";")
-	c := converse{func(e error) {
-		err = e
-	}}
+	if len(arr) < 5 {
+		return nil, errBedrockWrongFmt
+	}
 	ret := &resultImpl{
+		serverId: sid,
 		typ: McBedrock,
 		msgOfToday: arr[1],
-		onlineCount: c.strToInt(arr[4]),
-		maxCount: c.strToInt(arr[5]),
+		onlineCount: strToInt(arr[4], &err),
+		maxCount: strToInt(arr[5], &err),
 	}
 	return ret, err
 }
 
-type converse struct{
-	onErr func(error)
-}
-
-func (c *converse) strToInt(in string) int {
+func strToInt(in string, errOut *error) int {
 	o, err := strconv.Atoi(in)
 	if err != nil {
-		c.onErr(err)
+		*errOut = err
 	}
 	return o
 }

@@ -13,5 +13,6 @@ func TestPull(t *testing.T) {
 		t.Error(err)
 	}
 	res, err := conn.Pull()
+	fmt.Println(err)
 	fmt.Println(res)
 }

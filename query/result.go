@@ -4,6 +4,8 @@ import "fmt"
 
 // What should be returned in a query
 type Result interface {
+	GetServerId() uint64
+
 	GetResultType() Type
 
 	GetMsgOfToday() string
@@ -21,9 +23,14 @@ var nilResult = &resultImpl{
 
 type resultImpl struct {
 	typ Type
+	serverId uint64
 	msgOfToday string
 	onlineCount int
 	maxCount int
+}
+
+func (n *resultImpl) GetServerId() uint64 {
+	return n.serverId
 }
 
 func (n *resultImpl) GetResultType() Type {
@@ -43,6 +50,6 @@ func (n *resultImpl) GetMaxCount() int {
 }
 
 func (n *resultImpl) String() string {
-	return fmt.Sprintf("Result{Type=%d, MOTD=%s, OnlineCount=%d, MaxCount=%d}",
-		n.typ, n.msgOfToday, n.onlineCount, n.maxCount)
+	return fmt.Sprintf("Result{Type=%d, ServerId=%d, MOTD=%s, OnlineCount=%d, MaxCount=%d}",
+		n.typ, n.serverId, n.msgOfToday, n.onlineCount, n.maxCount)
 }
