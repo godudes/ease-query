@@ -1,7 +1,5 @@
 package query
 
-import "fmt"
-
 // What should be returned in a query
 type Result interface {
 	GetServerId() uint64
@@ -10,46 +8,49 @@ type Result interface {
 
 	GetMsgOfToday() string
 
-	GetOnlineCount() int
+	GetOnlineCount() int32
 
-	GetMaxCount() int
+	GetMaxCount() int32
+
+	GetBedrockNetVer() int32
+
+	GetBedrockGameVer() string
 
 	String() string
 }
 
-var nilResult = &resultImpl{
-	typ: Nil,
+var nilResult = &nilRes{}
+
+type nilRes struct {}
+
+func (n *nilRes) GetServerId() uint64 {
+	return 0
 }
 
-type resultImpl struct {
-	typ Type
-	serverId uint64
-	msgOfToday string
-	onlineCount int
-	maxCount int
+func (n *nilRes) GetResultType() Type {
+	return Nil
 }
 
-func (n *resultImpl) GetServerId() uint64 {
-	return n.serverId
+func (n *nilRes) GetMsgOfToday() string {
+	return ""
 }
 
-func (n *resultImpl) GetResultType() Type {
-	return n.typ
+func (n *nilRes) GetOnlineCount() int32 {
+	return 0
 }
 
-func (n *resultImpl) GetMsgOfToday() string {
-	return n.msgOfToday
+func (n *nilRes) GetMaxCount() int32 {
+	return 0
 }
 
-func (n *resultImpl) GetOnlineCount() int {
-	return n.onlineCount
+func (n *nilRes) GetBedrockNetVer() int32 {
+	return 0
 }
 
-func (n *resultImpl) GetMaxCount() int {
-	return n.maxCount
+func (n *nilRes) GetBedrockGameVer() string {
+	return ""
 }
 
-func (n *resultImpl) String() string {
-	return fmt.Sprintf("Result{Type=%d, ServerId=%d, MOTD=%s, OnlineCount=%d, MaxCount=%d}",
-		n.typ, n.serverId, n.msgOfToday, n.onlineCount, n.maxCount)
+func (n *nilRes) String() string {
+	return "NilResult"
 }
