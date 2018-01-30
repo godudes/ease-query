@@ -59,8 +59,8 @@ func bedrockPull(addr string) (Result, error) {
 	ret := &resultImpl{
 		typ: McBedrock,
 		msgOfToday: arr[1],
-		onlineCount: c.strToInt(arr[2]),
-		maxCount: c.strToInt(arr[3]),
+		onlineCount: c.strToInt(arr[4]),
+		maxCount: c.strToInt(arr[5]),
 	}
 	return ret, err
 }
