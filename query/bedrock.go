@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"fmt"
 	"math"
+	"time"
 )
 
 func init() {
@@ -68,6 +69,10 @@ type bedrockConn struct {
 
 func (c bedrockConn) Pull() (Result, error) {
 	return bedrockPing(c.conn)
+}
+
+func (c bedrockConn) SetDeadline(time time.Time) error {
+	return c.conn.SetDeadline(time)
 }
 
 func (c bedrockConn) Close() error {

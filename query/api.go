@@ -1,9 +1,13 @@
 package query
 
+import "time"
+
 // What you need to pull a query result
 type Conn interface {
 
 	Pull() (Result, error)
+
+	SetDeadline(time time.Time) error
 
 	Close() error
 }
