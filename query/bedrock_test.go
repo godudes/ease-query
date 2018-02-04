@@ -50,13 +50,13 @@ func TestRx(t *testing.T) {
 			maxCount: &maxCount,
 		}
 		i := 0
-		for t := range time.Tick(500 * time.Millisecond){
+		for t := range time.Tick(100 * time.Millisecond){
 			n, err := conn.Rx(via)
 			if err != nil {
 				fmt.Println(err)
 				break
 			}
-			fmt.Printf("Time=%s, N=%d, OnlineCount=%d, MaxCount=%d\n", t.String(), n, onlineCount, maxCount)
+			fmt.Printf("Time=[%s], N=[%d], Count=[%d/%d]\n", t.String(), n, onlineCount, maxCount)
 			i++; if i >= 20 { break }
 		}
 	}
