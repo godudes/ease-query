@@ -13,11 +13,11 @@ type Conn interface {
 }
 
 func Dial(driverType string, addr string) (Conn, error) {
-	val, ok := registry[driverType]
+	driver, ok := registry[driverType]
 	if !ok {
 		return nil, errWrongType
 	} else {
-		return val.Dial(addr)
+		return driver.Dial(addr)
 	}
 }
 
