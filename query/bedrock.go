@@ -33,27 +33,27 @@ type bedrockResult struct {
 	bedrockGameVer string
 }
 
-func (n *bedrockResult) GetServerId() uint64 {
+func (n bedrockResult) GetServerId() uint64 {
 	return n.serverId
 }
 
-func (n *bedrockResult) GetMsgOfToday() string {
+func (n bedrockResult) GetMsgOfToday() string {
 	return n.msgOfToday
 }
 
-func (n *bedrockResult) GetOnlineCount() int32 {
+func (n bedrockResult) GetOnlineCount() int32 {
 	return n.onlineCount
 }
 
-func (n *bedrockResult) GetMaxCount() int32 {
+func (n bedrockResult) GetMaxCount() int32 {
 	return n.maxCount
 }
 
-func (n *bedrockResult) GetBedrockNetVer() int32 {
+func (n bedrockResult) GetBedrockNetVer() int32 {
 	return n.bedrockNetVer
 }
 
-func (n *bedrockResult) GetBedrockGameVer() string {
+func (n bedrockResult) GetBedrockGameVer() string {
 	return n.bedrockGameVer
 }
 
@@ -69,6 +69,21 @@ type bedrockConn struct {
 
 func (c bedrockConn) Pull() (Result, error) {
 	return bedrockPing(c.conn)
+}
+
+func (c bedrockConn) Rx(via Via) (numOfRx int, err error) {
+	numOfRx = 0
+	res, err := bedrockPing(c.conn)
+	if err != nil {
+		return
+	}
+	if via.serverId			!= nil { *via.serverId		= res.GetServerId()		  ;numOfRx++	}
+	if via.msgOfToday		!= nil { *via.msgOfToday	= res.GetMsgOfToday()	  ;numOfRx++	}
+	if via.onlineCount		!= nil { *via.onlineCount	= res.GetOnlineCount()	  ;numOfRx++	}
+	if via.maxCount			!= nil { *via.maxCount		= res.GetMaxCount()		  ;numOfRx++	}
+	if via.bedrockNetVer	!= nil { *via.bedrockNetVer	= res.GetBedrockNetVer()  ;numOfRx++	}
+	if via.bedrockGameVer	!= nil { *via.bedrockGameVer= res.GetBedrockGameVer() ;numOfRx++	}
+	return
 }
 
 func (c bedrockConn) SetDeadline(time time.Time) error {

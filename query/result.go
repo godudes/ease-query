@@ -16,3 +16,13 @@ type Result interface {
 
 	String() string
 }
+
+type Via struct {
+	serverId *uint64
+	msgOfToday *string
+	onlineCount *int32
+	maxCount *int32
+	bedrockNetVer *int32
+	bedrockGameVer *string
+}
+
