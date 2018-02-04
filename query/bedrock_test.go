@@ -7,7 +7,7 @@ import (
 
 func TestPull(t *testing.T) {
 	a := func(addr string) {
-		conn, err := Dial(McBedrock, addr)
+		conn, err := Dial("mc-bedrock", addr)
 		if err != nil {
 			t.Error(err)
 		}

@@ -11,6 +11,15 @@ import (
 	"math"
 )
 
+func init() {
+	PutDriver("mc-bedrock", new(bedrockDriver))
+}
+type bedrockDriver struct {}
+
+func (d bedrockDriver) Dial(addr string) (Conn, error) {
+	return newBedrockConn(addr)
+}
+
 var magic = []byte{0x00, 0xff, 0xff, 0x00, 0xfe, 0xfe, 0xfe, 0xfe, 0xfd, 0xfd, 0xfd, 0xfd, 0x12, 0x34, 0x56, 0x78}
 var validDataFormat = "MC"+"PE" // I hate typo checks
 
@@ -25,10 +34,6 @@ type bedrockResult struct {
 
 func (n *bedrockResult) GetServerId() uint64 {
 	return n.serverId
-}
-
-func (n *bedrockResult) GetResultType() Type {
-	return McBedrock
 }
 
 func (n *bedrockResult) GetMsgOfToday() string {
@@ -58,33 +63,32 @@ func (n *bedrockResult) String() string {
 }
 
 type bedrockConn struct {
-	*conn
+	conn net.Conn
 }
 
 func (c bedrockConn) Pull() (Result, error) {
-	return bedrockPullOfflinePingPong(c.addr)
+	return bedrockPing(c.conn)
 }
 
-func newBedrockConn(addr string) bedrockConn {
-	return bedrockConn{
-		&conn{
-			McBedrock, addr,
-		},
+func (c bedrockConn) Close() error {
+	return c.conn.Close()
+}
+
+func newBedrockConn(addr string) (c *bedrockConn, err error) {
+	conn, err := net.Dial("udp", addr)
+	if err != nil {
+		return
 	}
+	c = new(bedrockConn)
+	c.conn = conn
+	return
 }
 
 // Pull RakNet UNCONNECTED_PONG packet
-func bedrockPullOfflinePingPong(addr string) (Result, error) {
-	var err error
-	conn, err := net.Dial("udp", addr)
-	if err != nil {
-		return nilResult, err
-	}
-	defer func() {conn.Close()} ()
-
+func bedrockPing(conn net.Conn) (res Result, err error) {
 	reqPacket := new(bytes.Buffer)
 	reqPacket.WriteByte(0x01)
-	pingId :=  rand.Uint64()
+	pingId := rand.Uint64()
 	binary.Write(reqPacket, binary.BigEndian, pingId)
 	reqPacket.Write(magic)
 	binary.Write(reqPacket, binary.BigEndian, reqPacket.Len())
@@ -93,10 +97,8 @@ func bedrockPullOfflinePingPong(addr string) (Result, error) {
 	resBytes := make([]byte, 4096)
 	n, err := conn.Read(resBytes)
 	if err != nil {
-		return nilResult, err
+		return nil, err
 	}
-	defer func() {conn.Close()} ()
-
 	if n < 33 {
 		return nil, errBedrockWrongLen
 	}
@@ -114,15 +116,15 @@ func bedrockPullOfflinePingPong(addr string) (Result, error) {
 	if 35 + int(resLen) > n {
 		return nil, errBedrockWrongLen
 	}
-	res := bytes.NewBuffer(resBytes[35:35+resLen]).String() // jump header
-	arr := strings.Split(res, ";")
+	resStr := bytes.NewBuffer(resBytes[35:35+resLen]).String() // jump header
+	arr := strings.Split(resStr, ";")
 	if len(arr) < 5 {
 		return nil, errBedrockWrongFmt
 	}
 	if arr[0] != validDataFormat {
 		return nil, errBedrockWrongFmt
 	}
-	ret := &bedrockResult{
+	res = &bedrockResult{
 		serverId: sid,
 		msgOfToday: arr[1],
 		bedrockNetVer: strToInt32(arr[2], &err),
@@ -130,7 +132,7 @@ func bedrockPullOfflinePingPong(addr string) (Result, error) {
 		onlineCount: strToInt32(arr[4], &err),
 		maxCount: strToInt32(arr[5], &err),
 	}
-	return ret, err
+	return
 }
 
 func strToInt32(in string, errOut *error) int32 {
