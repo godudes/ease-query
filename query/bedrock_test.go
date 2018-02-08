@@ -25,7 +25,7 @@ func TestPull(t *testing.T) {
 		}
 		fmt.Println(res)
 	}
-	a( "play.ease"+"cation.net:19132")
+	a("play.ease"+"cation.net:19132")
 	a("play.lb"+"sg.net:19132")
 	a("bw.fe"+"craft.cc:19132")
 	a("no.server.here:19132") // dial udp: no such host
