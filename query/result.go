@@ -18,11 +18,11 @@ type Result interface {
 }
 
 type Via struct {
-	serverId *uint64
-	msgOfToday *string
-	onlineCount *int32
-	maxCount *int32
-	bedrockNetVer *int32
-	bedrockGameVer *string
+	ServerId *uint64
+	MsgOfToday *string
+	OnlineCount *int32
+	MaxCount *int32
+	BedrockNetVer *int32
+	BedrockGameVer *string
 }
 

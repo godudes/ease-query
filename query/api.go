@@ -7,7 +7,7 @@ type Conn interface {
 
 	Pull() (Result, error)
 
-	Rx(via Via) (numOfRx int, err error)
+	Rx(via * Via) (numOfRx int, err error)
 
 	SetDeadline(time time.Time) error
 

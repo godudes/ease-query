@@ -71,18 +71,18 @@ func (c bedrockConn) Pull() (Result, error) {
 	return bedrockPing(c.conn)
 }
 
-func (c bedrockConn) Rx(via Via) (numOfRx int, err error) {
+func (c bedrockConn) Rx(via * Via) (numOfRx int, err error) {
 	numOfRx = 0
 	res, err := bedrockPing(c.conn)
 	if err != nil {
 		return
 	}
-	if via.serverId			!= nil { *via.serverId		= res.GetServerId()		  ;numOfRx++	}
-	if via.msgOfToday		!= nil { *via.msgOfToday	= res.GetMsgOfToday()	  ;numOfRx++	}
-	if via.onlineCount		!= nil { *via.onlineCount	= res.GetOnlineCount()	  ;numOfRx++	}
-	if via.maxCount			!= nil { *via.maxCount		= res.GetMaxCount()		  ;numOfRx++	}
-	if via.bedrockNetVer	!= nil { *via.bedrockNetVer	= res.GetBedrockNetVer()  ;numOfRx++	}
-	if via.bedrockGameVer	!= nil { *via.bedrockGameVer= res.GetBedrockGameVer() ;numOfRx++	}
+	if via.ServerId			!= nil { *via.ServerId		= res.GetServerId()		  ;numOfRx++	}
+	if via.MsgOfToday		!= nil { *via.MsgOfToday	= res.GetMsgOfToday()	  ;numOfRx++	}
+	if via.OnlineCount		!= nil { *via.OnlineCount	= res.GetOnlineCount()	  ;numOfRx++	}
+	if via.MaxCount			!= nil { *via.MaxCount		= res.GetMaxCount()		  ;numOfRx++	}
+	if via.BedrockNetVer	!= nil { *via.BedrockNetVer	= res.GetBedrockNetVer()  ;numOfRx++	}
+	if via.BedrockGameVer	!= nil { *via.BedrockGameVer= res.GetBedrockGameVer() ;numOfRx++	}
 	return
 }
 

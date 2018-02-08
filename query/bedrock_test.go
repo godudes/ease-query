@@ -1,14 +1,16 @@
-package query
+package query_test
 
 import (
 	"testing"
 	"fmt"
 	"time"
+
+	"github.com/godudes/ease-query/query"
 )
 
 func TestPull(t *testing.T) {
 	a := func(addr string) {
-		conn, err := Dial("mc-bedrock", addr)
+		conn, err := query.Dial("mc-bedrock", addr)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -35,7 +37,7 @@ func TestPull(t *testing.T) {
 func TestRx(t *testing.T) {
 
 	a := func(addr string) {
-		conn, err := Dial("mc-bedrock", addr)
+		conn, err := query.Dial("mc-bedrock", addr)
 		err = conn.SetDeadline(time.Now().Add(time.Duration(5 * time.Second)))
 		if err != nil {
 			fmt.Println(err)
@@ -45,9 +47,9 @@ func TestRx(t *testing.T) {
 			onlineCount int32
 			maxCount int32
 		)
-		via := Via{
-			onlineCount: &onlineCount,
-			maxCount: &maxCount,
+		via := &query.Via{
+			OnlineCount: &onlineCount,
+			MaxCount: &maxCount,
 		}
 		i := 0
 		for t := range time.Tick(100 * time.Millisecond){
